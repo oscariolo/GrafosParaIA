@@ -1,11 +1,8 @@
 package com.example;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 import org.javatuples.Pair;
 
 public class Buscador {
@@ -32,10 +29,13 @@ public class Buscador {
                     auxlist.add(hijo);
                 }
             }
+            //reverse Collections
             pilaNodos.pop();
-            for(int i = auxlist.size()-1; i >= 0; i--){
-                pilaNodos.push(auxlist.get(i));
-            }
+            // for(int i = auxlist.size()-1; i >= 0; i--){
+            //     pilaNodos.push(auxlist.get(i));
+            // }
+            Collections.reverse(auxlist);
+            pilaNodos.addAll(auxlist);
         }
     }
 
@@ -76,7 +76,7 @@ public class Buscador {
     }
     
 
-    public void busqueda_bidireccional(Nodo inicio, Nodo meta) throws InterruptedException, ExecutionException{ //buscamos de un Nodo a otro y nos detenemos al encontrar un nodo comun
+    public void busqueda_bidireccional(Nodo inicio, Nodo meta){ //buscamos de un Nodo a otro y nos detenemos al encontrar un nodo comun
         
         listas_visitados visitados = new listas_visitados();
         CompletableFuture<ArrayList<Nodo>> futuro1 = busqueda_amplitud_future(inicio,visitados.visitados1,visitados.visitados2);
@@ -121,7 +121,7 @@ public class Buscador {
     }
 
 
-    //BUSQUEDA POR PROFUNDIDAD ITERATIVA///////////////
+    //BUSQUEDA POR PROFUNDIDAD ITERATIVA///////////////(solucion recursiva)
     // public void busqueda_profundidad_iterativa(Nodo inicial,Nodo objetivo){
     //     Integer profundidad = 0;
     //     Integer MAX_DEEP = 1000;
@@ -154,27 +154,29 @@ public class Buscador {
     // }
 
     public void busqueda_profundidad_iterativa(Nodo inicial, ArrayList<Nodo> objetivos) {
-        Integer MAX_DEEP = 1000;
         Integer profundidad_final = 0;
         Integer profundad_actual = 0;
-        while(profundidad_final != MAX_DEEP){
+        while(true){
+            System.out.println("Profundidad: " + profundidad_final);
             ArrayList<Nodo> cola_actual = new ArrayList<>();
             cola_actual.add(inicial);
             profundad_actual = 0;
             while(profundad_actual != profundidad_final){
-                Integer tam = cola_actual.size();
-                for(int i = 0; i < tam; i++){
-                    Nodo padre = cola_actual.remove(0);
-                    cola_actual.addAll(padre.get_hijos());
+                Integer tam = cola_actual.size(); //cuento el tamanio de los hijos sacados en ese momento
+                for(int i = 0; i < tam; i++){ //saco los hijos de cada uno 
+                    cola_actual.addAll(cola_actual.remove(0).get_hijos());
+                    
                 }
                 profundad_actual++; 
+            }
+            if(cola_actual.isEmpty()){
+                return;
             }
 
             for(Nodo nodo : cola_actual){
                 System.out.println(nodo.get_nombre());
                 if(objetivos.contains(nodo)){
-                    System.out.println("Nodo encontrado");
-                    System.out.println(nodo.get_nombre());
+                    System.out.print(nodo.get_nombre());
                     objetivos.remove(nodo);
                 }
                 if(objetivos.isEmpty()){
@@ -275,7 +277,7 @@ public class Buscador {
         cola.add(inicio);
     
         while(!cola.isEmpty()){
-            System.out.println("iteracion");
+            
             Nodo actual = cola.remove(0);
 
             if(actual.equals(objetivo)){ //encontro el nodo objetivo
