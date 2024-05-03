@@ -1,42 +1,59 @@
 package com.example;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
+
 import org.javatuples.Pair;
 
 public class Buscador {
-    public void busqueda_profundidad(Nodo inicio,ArrayList<Nodo> objetivos){ //pila
+    public ArrayList<Nodo> busqueda_profundidad(Nodo inicio,ArrayList<Nodo> objetivos){ //pila
         Stack<Nodo> pilaNodos = new Stack<>();
-        ArrayList<Nodo> visitados = new ArrayList<>();
+        ArrayList<Nodo> lista_extraidos = new ArrayList<>();
         pilaNodos.push(inicio);
-        System.out.println("Cola   |   Extraccion");
+        // System.out.println("Cola   |   Extraccion");
         while(!pilaNodos.isEmpty()){    
-            System.out.print(pilaNodos.toString());
-            System.out.print("   |    ");
-            System.out.println(pilaNodos.peek().get_nombre());
-            if(objetivos != null && objetivos.contains(pilaNodos.peek())){
-                System.out.println("Encontrado" + " Nodo: " + pilaNodos.peek().get_nombre());
-                objetivos.remove(pilaNodos.peek());
-                if(objetivos.isEmpty()){
-                    break;
-                }
-            }
-            visitados.add(pilaNodos.peek());
-            ArrayList<Nodo> auxlist = new ArrayList<>();
-            for(Nodo hijo : pilaNodos.peek().get_hijos()){ //obtenemos los hijos y agregamos a una lista para mantener orden de obtencion de hijos para la pila
-                if(!visitados.contains(hijo) && !pilaNodos.contains(hijo)){
-                    auxlist.add(hijo);
-                }
-            }
-            //reverse Collections
-            pilaNodos.pop();
-            // for(int i = auxlist.size()-1; i >= 0; i--){
-            //     pilaNodos.push(auxlist.get(i));
+            // // System.out.print(pilaNodos.toString());
+            // // System.out.print("   |    ");
+            // // System.out.println(pilaNodos.peek().get_nombre());
+            // if(objetivos != null && objetivos.contains(pilaNodos.peek())){
+            //     // System.out.println("Encontrado" + " Nodo: " + pilaNodos.peek().get_nombre());
+            //     extraido.add(pilaNodos.peek());
+            //     objetivos.remove(pilaNodos.peek());
+            //     visitados.add(pilaNodos.peek());
+            //     if(objetivos.isEmpty()){
+            //         return extraido;
+            //     }
             // }
-            Collections.reverse(auxlist);
-            pilaNodos.addAll(auxlist);
+            
+            // ArrayList<Nodo> auxlist = new ArrayList<>();
+            // for(Nodo hijo : pilaNodos.peek().get_hijos()){ //obtenemos los hijos y agregamos a una lista para mantener orden de obtencion de hijos para la pila
+            //     if(!visitados.contains(hijo) && !pilaNodos.contains(hijo)){
+            //         auxlist.add(hijo);
+            //     }
+            // }
+            // pilaNodos.pop(); 
+            // Collections.reverse(auxlist);
+            // pilaNodos.addAll(auxlist);
+            Nodo extraido = pilaNodos.pop();
+            lista_extraidos.add(extraido);
+            objetivos.remove(extraido);
+            if(objetivos.isEmpty()){
+                return lista_extraidos;
+            }
+            for(Nodo nodo: extraido.get_hijos()){
+                if(!lista_extraidos.contains(nodo) && !pilaNodos.contains(nodo)){
+                    pilaNodos.push(nodo);
+                }
+            }
+
         }
+        return lista_extraidos;
+
     }
 
     public void busqueda_amplitud(Nodo inicio, ArrayList<Nodo> objetivos){ //cola
@@ -153,41 +170,131 @@ public class Buscador {
     //     return null; //en esa profundidad no fue encontrada regresa null
     // }
 
-    public void busqueda_profundidad_iterativa(Nodo inicial, ArrayList<Nodo> objetivos) {
-        Integer profundidad_final = 0;
-        Integer profundad_actual = 0;
-        while(true){
-            System.out.println("Profundidad: " + profundidad_final);
-            ArrayList<Nodo> cola_actual = new ArrayList<>();
-            cola_actual.add(inicial);
-            profundad_actual = 0;
-            while(profundad_actual != profundidad_final){
-                Integer tam = cola_actual.size(); //cuento el tamanio de los hijos sacados en ese momento
-                for(int i = 0; i < tam; i++){ //saco los hijos de cada uno 
-                    cola_actual.addAll(cola_actual.remove(0).get_hijos());
+    // public void busqueda_profundidad_iterativa(Nodo inicial, ArrayList<Nodo> objetivos) {
+    //     Integer profundidad_final = 0;
+    //     Integer profundad_actual = 0;
+    //     // Set<Nodo> visitados = new HashSet<>();
+    //     while(true){
+    //         System.out.println("Profundidad: " + profundidad_final);
+    //         ArrayList<Nodo> cola_actual = new ArrayList<>();
+    //         cola_actual.add(inicial);
+    //         profundad_actual = 0;
+    //         while(profundad_actual != profundidad_final){
+    //             Integer tam = cola_actual.size(); //cuento el tamanio de los hijos sacados en ese momento
+    //             for(int i = 0; i < tam; i++){ //saco los hijos de cada uno 
+    //                 cola_actual.addAll(cola_actual.remove(0).get_hijos());
                     
-                }
-                profundad_actual++; 
-            }
-            if(cola_actual.isEmpty()){
-                return;
-            }
+    //             }
+    //             profundad_actual++; 
+    //         }
+    //         if(cola_actual.isEmpty()){
+    //             return;
+    //         }
 
-            for(Nodo nodo : cola_actual){
-                System.out.println(nodo.get_nombre());
-                if(objetivos.contains(nodo)){
-                    System.out.print(nodo.get_nombre());
-                    objetivos.remove(nodo);
+    //         for(Nodo nodo : cola_actual){
+    //             System.out.println(nodo.get_nombre());
+    //             if(objetivos.contains(nodo)){
+    //                 System.out.print(nodo.get_nombre());
+    //                 objetivos.remove(nodo);
+    //             }
+    //             if(objetivos.isEmpty()){
+    //                 return;
+    //             }
+    //         }
+    //         cola_actual.clear();
+    //         // visitados.clear();
+    //         profundidad_final++;
+    //     }
+
+    // }
+
+    // public void busqueda_profundidad_iterativa(Nodo inicial, List<Nodo> objetivos) {
+    // int profundidad_final = 0;
+    // Set<Nodo> remainingObjetivos = new HashSet<>(objetivos);
+    // Deque<Nodo> cola_actual = new ArrayDeque<>();
+    // Set<Nodo> visitados = new HashSet<>();
+    //     while (true) {
+    //         System.out.println("Profundidad: " + profundidad_final);
+            
+    //         cola_actual.add(inicial);
+
+    //         for (int profundad_actual = 0; profundad_actual < profundidad_final; profundad_actual++) {
+    //             int tam = cola_actual.size();
+    //             for (int i = 0; i < tam; i++) {
+    //                 Nodo current = cola_actual.remove();
+    //                 for(Nodo hijo : current.get_hijos()){
+    //                     if(!visitados.contains(hijo)){
+    //                         cola_actual.add(hijo);
+    //                         visitados.add(hijo);
+    //                     }
+    //                 }
+
+    //             }
+    //         }
+
+    //         if (cola_actual.isEmpty()) {
+    //             return;
+    //         }
+
+    //         for (Nodo nodo : cola_actual) {
+    //             System.out.println(nodo.get_nombre());
+    //             if (remainingObjetivos.contains(nodo)) {
+    //                 System.out.print(nodo.get_nombre());
+    //                 remainingObjetivos.remove(nodo);
+    //             }
+    //             if (remainingObjetivos.isEmpty()) {
+    //                 return;
+    //             }
+    //         }
+            
+    //         cola_actual.clear();
+    //         visitados.clear();
+    //         profundidad_final++;
+    //     }
+    // }
+    
+    public void busqueda_profundidad_iterativa(Nodo inicial, List<Nodo> objetivos) {
+        int profundidad_final = 0;
+        int profundidad_actual = 0;
+        Set<Nodo> remainingObjetivos = new HashSet<>(objetivos);
+        Stack<Nodo> pila_actual = new Stack<Nodo>();
+        Set<Nodo> visitados = new HashSet<>();
+        while(true) {
+            System.out.println("Iteracion " + profundidad_final);
+            pila_actual.add(inicial);
+            profundidad_actual = 0;
+            while(profundidad_actual < profundidad_final) { //mientras sea menor saco los hijos
+                int tam = 0;
+                System.out.println(pila_actual.peek().get_nombre());
+                for(Nodo hijo: pila_actual.pop().get_hijos()){
+                    if(!pila_actual.contains(hijo)&& !visitados.contains(hijo)){
+                        pila_actual.push(hijo);
+                        visitados.add(hijo);
+                        tam ++;
+                    }
                 }
-                if(objetivos.isEmpty()){
-                    return;
+                profundidad_actual ++;
+                if(profundidad_actual == profundidad_final){
+                    for(int i = tam; i>0 ; i--){
+                        System.out.println(pila_actual.peek().get_nombre());
+                        remainingObjetivos.remove(pila_actual.pop());
+                        if(remainingObjetivos.isEmpty()){
+                            return;
+                        }
+                    }
+                    profundidad_actual --; //me regreso una profundidad antes para ver los otros hijos
+                }
+                if(pila_actual.isEmpty()){
+                    break;
                 }
             }
-            cola_actual.clear();
-            profundidad_final++;
+            profundidad_final ++;
+            visitados.clear();
+            pila_actual.clear();
         }
-
     }
+
+
     /////////////////////////////////////////////
     //BUSQUEDA POR COSTO UNIFORME////////////////
     public void busqueda_costo_uniforme(Nodo inicial, Nodo objetivo){

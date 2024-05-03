@@ -2,6 +2,7 @@ package com.example;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.function.Supplier;
 
 import org.javatuples.Pair;
 
@@ -17,8 +18,7 @@ public class Main {
         HashMap<String,Nodo> HashNodos = new HashMap<String,Nodo>();
         
         Pair<Nodo,ArrayList<Nodo>> nodos_seleccionados = Pair.with(HashNodos.get("H"), new ArrayList<Nodo>());
-        Buscador buscador = new Buscador();
-        double tiempo = 0;     
+        Buscador buscador = new Buscador();    
         int opcion = 0;
         
         while(opcion != 12){
@@ -38,7 +38,8 @@ public class Main {
             System.out.println("12. Salir");
             
             opcion = Integer.parseInt(readOption());
-            Runnable task = () -> {};
+            // Runnable task = () -> {};
+            Supplier<ArrayList<Nodo>> task = null;
             switch (opcion) {
                 
                 case 1:
@@ -54,46 +55,42 @@ public class Main {
                     break;
                 case 4:
                     
-                    task = () -> buscador.busqueda_amplitud(nodo_inicial, nodos_seleccionados_final);
+                    // task = () -> buscador.busqueda_amplitud(nodo_inicial, nodos_seleccionados_final);
                     break;
                 case 5:
                     task = () -> buscador.busqueda_profundidad(nodo_inicial, nodos_seleccionados_final);
                     break;
                 case 6:
-                    task = () -> buscador.busqueda_profundidad_iterativa(nodo_inicial, nodos_seleccionados_final);
+                    // task = () -> buscador.busqueda_profundidad_iterativa(nodo_inicial, nodos_seleccionados_final);
                     break;
                 case 7:
-                    task = () -> buscador.busqueda_bidireccional(nodo_inicial, nodos_seleccionados_final.get(0));
+                    // task = () -> buscador.busqueda_bidireccional(nodo_inicial, nodos_seleccionados_final.get(0));
                     break;
                 case 8:
-                    task = () -> buscador.busqueda_costo_uniforme(nodo_inicial, nodos_seleccionados_final.get(0));
+                    // task = () -> buscador.busqueda_costo_uniforme(nodo_inicial, nodos_seleccionados_final.get(0));
                     break;
                 case 9:
-                    task = () -> buscador.busqueda_del_gradiente(nodo_inicial, nodos_seleccionados_final.get(0));
+                    // task = () -> buscador.busqueda_del_gradiente(nodo_inicial, nodos_seleccionados_final.get(0));
                     break;
                 case 10:
-                    task = () -> buscador.busqueda_primero_el_mejor(nodo_inicial, nodos_seleccionados_final.get(0));
+                    // task = () -> buscador.busqueda_primero_el_mejor(nodo_inicial, nodos_seleccionados_final.get(0));
                     break;
                 case 11:
-                    task = () -> buscador.busqueda_A_estrella(nodo_inicial, nodos_seleccionados_final.get(0));
+                    // task = () -> buscador.busqueda_A_estrella(nodo_inicial, nodos_seleccionados_final.get(0));
                     break;
                 case 12:
                     close_sc = true;
                 default:
                     break;
             }
-            tiempo = measureExecutionTime(task);
-            System.out.println(tiempo + " nanosegundos");
+            if(task != null){
+                AnalizadorGrafos.analizar_tiempo_maquina(task);
+            }
+            
+            
 
         }
 
-    }
-
-    public static double measureExecutionTime(Runnable code){
-        long startTime = System.nanoTime();
-        code.run();
-        long endTime = System.nanoTime();
-        return (endTime - startTime)/1_000_000.0;
     }
 
     public static String readOption(){
