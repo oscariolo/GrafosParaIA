@@ -1,7 +1,9 @@
 package com.example;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
+// import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,8 +30,7 @@ public class Buscador {
             //     if(objetivos.isEmpty()){
             //         return extraido;
             //     }
-            // }
-            
+            // } 
             // ArrayList<Nodo> auxlist = new ArrayList<>();
             // for(Nodo hijo : pilaNodos.peek().get_hijos()){ //obtenemos los hijos y agregamos a una lista para mantener orden de obtencion de hijos para la pila
             //     if(!visitados.contains(hijo) && !pilaNodos.contains(hijo)){
@@ -56,30 +57,48 @@ public class Buscador {
 
     }
 
-    public void busqueda_amplitud(Nodo inicio, ArrayList<Nodo> objetivos){ //cola
-        ArrayList<Nodo> colaNodos = new ArrayList<>();
-        ArrayList<Nodo> visitados = new ArrayList<>();
+    public ArrayList<Nodo> busqueda_amplitud(Nodo inicio, ArrayList<Nodo> objetivos){ //cola
+        // ArrayList<Nodo> colaNodos = new ArrayList<>();
+        // ArrayList<Nodo> visitados = new ArrayList<>();
+        // colaNodos.add(inicio);
+        // // System.out.println("Cola   |   Extraccion");
+        // while(!colaNodos.isEmpty()){
+        //     System.out.print(colaNodos.toString());
+        //     System.out.print("   |    ");
+        //     System.out.println(colaNodos.get(0).toString());
+        //     if(objetivos != null && objetivos.contains(colaNodos.get(0))){
+        //         System.out.println("Encontrado" + " Nodo " + colaNodos.get(0).get_nombre());
+        //         objetivos.remove(colaNodos.get(0));
+        //         if(objetivos.isEmpty()){
+        //             break;
+        //         }
+        //     }
+        //     for(Nodo hijo : colaNodos.get(0).get_hijos()){
+        //         if(!visitados.contains(hijo) && !colaNodos.contains(hijo)){
+        //             colaNodos.add(hijo);
+        //         }
+        //     }
+        //     visitados.add(colaNodos.get(0));
+        //     colaNodos.remove(0);
+        // }
+        Deque<Nodo> colaNodos = new ArrayDeque<>();
+        ArrayList<Nodo> lista_extraidos = new ArrayList<>();
         colaNodos.add(inicio);
-        System.out.println("Cola   |   Extraccion");
         while(!colaNodos.isEmpty()){
-            System.out.print(colaNodos.toString());
-            System.out.print("   |    ");
-            System.out.println(colaNodos.get(0).toString());
-            if(objetivos != null && objetivos.contains(colaNodos.get(0))){
-                System.out.println("Encontrado" + " Nodo " + colaNodos.get(0).get_nombre());
-                objetivos.remove(colaNodos.get(0));
-                if(objetivos.isEmpty()){
-                    break;
+            Nodo extraido = colaNodos.pop();
+            lista_extraidos.add(extraido);
+            objetivos.remove(extraido);
+            if(objetivos.isEmpty()){
+                return lista_extraidos;
+            }
+            for(Nodo nodo: extraido.get_hijos()){
+                if(!lista_extraidos.contains(nodo) && !colaNodos.contains(nodo)){
+                    colaNodos.add(nodo);
                 }
             }
-            for(Nodo hijo : colaNodos.get(0).get_hijos()){
-                if(!visitados.contains(hijo) && !colaNodos.contains(hijo)){
-                    colaNodos.add(hijo);
-                }
-            }
-            visitados.add(colaNodos.get(0));
-            colaNodos.remove(0);
         }
+
+        return lista_extraidos;
     }
 
     public class listas_visitados{
@@ -113,7 +132,6 @@ public class Buscador {
 
     private CompletableFuture<ArrayList<Nodo>> busqueda_amplitud_future(Nodo inicio,ArrayList<Nodo> visitados_propio,ArrayList<Nodo> visitados_externo){
         
-        System.out.println("Cola   |   Extraccion");
         CompletableFuture<ArrayList<Nodo>> future = CompletableFuture.supplyAsync(()->{
             ArrayList<Nodo> colaNodos = new ArrayList<>();
             colaNodos.add(inicio);
@@ -297,105 +315,108 @@ public class Buscador {
 
     /////////////////////////////////////////////
     //BUSQUEDA POR COSTO UNIFORME////////////////
-    public void busqueda_costo_uniforme(Nodo inicial, Nodo objetivo){
+    public ArrayList<Nodo> busqueda_costo_uniforme(Nodo inicial, ArrayList<Nodo> objetivos){
         ArrayList<Pair<Nodo,Integer> >colaNodos_peso = new ArrayList<>();
         ArrayList<Nodo> visitados = new ArrayList<>();
         Pair<Nodo,Integer> par = Pair.with(inicial,0);
+        int iteraciones = 0;
         colaNodos_peso.add(par);
-        while(!colaNodos_peso.isEmpty()){
+        // while(!colaNodos_peso.isEmpty()){
+        //     Collections.sort(colaNodos_peso, (o1, o2) -> Integer.compare(o1.getValue1(), o2.getValue1()));
+        //     System.out.println("Iteracion");
+        //     for(int i = 0; i < colaNodos_peso.size(); i++){
+        //         System.out.print(colaNodos_peso.get(i).getValue0().get_nombre() + " ");
+        //         System.out.println(colaNodos_peso.get(i).getValue1() + " ");
+        //     }
+        //     //imprimir cola
+        //     if(colaNodos_peso.get(0).getValue0().equals(objetivo)){
+        //         System.out.println("Nodo encontrado");
+        //         System.out.println(colaNodos_peso.get(0).getValue0().get_nombre());
+        //         System.out.println("Costo: " + colaNodos_peso.get(0).getValue1());
+        //         break;
+        //     }
+        //     //si no es entonces vemos los hijos     
+        //     for(Arista arista : colaNodos_peso.get(0).getValue0().get_aristas()){   
+        //         if(!visitados.contains(arista.get_destino())){
+        //             Pair<Nodo,Integer> par2 = Pair.with(arista.get_destino(),colaNodos_peso.get(0).getValue1() + arista.get_peso());
+        //             colaNodos_peso.add(par2);
+        //             if(!arista.get_destino().equals(objetivo)){ //para evitar agregar el final a los visitados y que vea el resto
+        //                 visitados.add(arista.get_destino());
+        //             }
+        //         }
+        //     }
+        //     colaNodos_peso.remove(0);
+        // }
+        
+        while(!colaNodos_peso.isEmpty() || !(iteraciones > 10000)){
             Collections.sort(colaNodos_peso, (o1, o2) -> Integer.compare(o1.getValue1(), o2.getValue1()));
-
-            System.out.println("Iteracion");
-            for(int i = 0; i < colaNodos_peso.size(); i++){
-                System.out.print(colaNodos_peso.get(i).getValue0().get_nombre() + " ");
-                System.out.println(colaNodos_peso.get(i).getValue1() + " ");
-            }
-            //imprimir cola
-            
-            if(colaNodos_peso.get(0).getValue0().equals(objetivo)){
-                System.out.println("Nodo encontrado");
-                System.out.println(colaNodos_peso.get(0).getValue0().get_nombre());
-                System.out.println("Costo: " + colaNodos_peso.get(0).getValue1());
-                break;
+            if(objetivos.remove(colaNodos_peso.get(0).getValue0())){
+                if(objetivos.isEmpty()){return visitados;}
             }
             //si no es entonces vemos los hijos
-        
-            for(Arista arista : colaNodos_peso.get(0).getValue0().get_aristas()){
-            
-                if(!visitados.contains(arista.get_destino())){
-                    Pair<Nodo,Integer> par2 = Pair.with(arista.get_destino(),colaNodos_peso.get(0).getValue1() + arista.get_peso());
-                    colaNodos_peso.add(par2);
-                    if(!arista.get_destino().equals(objetivo)){ //para evitar agregar el final a los visitados y que vea el resto
-                        visitados.add(arista.get_destino());
-                    }
-                }
+            for(Arista arista : colaNodos_peso.get(0).getValue0().get_aristas()){     
+                Pair<Nodo,Integer> par2 = Pair.with(arista.get_destino(),colaNodos_peso.get(0).getValue1() + arista.get_peso());
+                colaNodos_peso.add(par2);
             }
-            colaNodos_peso.remove(0);
+            visitados.add(colaNodos_peso.remove(0).getValue0());
+            iteraciones ++;
         }
+
+        return visitados;
+        
+
     }
 
     //METODO DE LA GRADIENTE///
   
-    public void busqueda_del_gradiente(Nodo inicio,Nodo objetivo){
-        
+    public ArrayList<Nodo> busqueda_del_gradiente(Nodo inicio,ArrayList<Nodo> objetivos){
         Nodo actual = inicio;
         ArrayList<Nodo> camino = new ArrayList<>();
         camino.add(inicio);
-        while(!actual.equals(objetivo)){
+        while(!objetivos.isEmpty()){
             ArrayList<Nodo> auxlist = new ArrayList<>(actual.get_hijos());
             Collections.sort(auxlist, (o1, o2) -> Integer.compare(o1.get_valor(), o2.get_valor()));
             if(auxlist.get(0).get_valor() <= actual.get_valor()){
                 actual = auxlist.get(0);
                 camino.add(actual);
             }
-            if(auxlist.get(0).equals(objetivo)){
-                break;
-            }
+            objetivos.remove(actual);
         }
 
-        for(Nodo nodo : camino){
-            System.out.println(nodo.get_nombre());
-        }
+        return camino;
     }
 
     //METODO PRIMERO EL MEJOR
 
-    public void busqueda_primero_el_mejor(Nodo inicio, Nodo objetivo){
+    public ArrayList<Nodo> busqueda_primero_el_mejor(Nodo inicio, ArrayList<Nodo> objetivos){
         ArrayList<Nodo> cola_prioridad = new ArrayList<>();
         cola_prioridad.add(inicio);
-
+        ArrayList<Nodo> camino = new ArrayList<>();
         while(!cola_prioridad.isEmpty()){
             Nodo m = cola_prioridad.remove(0);
-            System.out.println(m.get_nombre());
-            if(m.equals(objetivo)){
-                break;
-            }
+            camino.add(m);
+            objetivos.remove(m);
+            if(objetivos.isEmpty()){return camino;}
             cola_prioridad.addAll(m.get_hijos());
             Collections.sort(cola_prioridad,(o1,o2)-> Integer.compare(o1.get_valor(), o2.get_valor()));
         }
+        return camino;
     }
 
     //METODO A*
 
-    public void busqueda_A_estrella(Nodo inicio, Nodo objetivo){
+    public ArrayList<Nodo> busqueda_A_estrella(Nodo inicio, ArrayList<Nodo> objetivos){
         ArrayList<Nodo> cola = new ArrayList<>();
         ArrayList<Nodo> finished_list = new ArrayList<>();
         inicio.set_G_valor(0);
         cola.add(inicio);
     
-        while(!cola.isEmpty()){
-            
+        while(!cola.isEmpty()){       
             Nodo actual = cola.remove(0);
-
-            if(actual.equals(objetivo)){ //encontro el nodo objetivo
-                finished_list.add(actual);
-                System.out.println("Encontro objetivo");
-                break;
+            if(objetivos.remove(actual)){ //encontro el nodo objetivo
+                if(objetivos.isEmpty()){return finished_list;}
             }
-            
-
             for(Arista arista_actual : actual.get_aristas()){  //saco las aristas del nodo actual
-                
                 if(finished_list.contains(arista_actual.get_destino())){
                     continue;
                 }
@@ -412,12 +433,7 @@ public class Buscador {
             Collections.sort(cola,(o1,o2)-> Integer.compare(o1.get_F_valor(), o2.get_F_valor()));
             finished_list.add(actual);
         }
-
-        System.out.println("Camino: ");
-        for(Nodo nodo : finished_list){
-            System.out.println(nodo.get_nombre());
-        }
-
+        return finished_list;
 
     }
 

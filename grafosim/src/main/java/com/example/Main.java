@@ -55,28 +55,28 @@ public class Main {
                     break;
                 case 4:
                     
-                    // task = () -> buscador.busqueda_amplitud(nodo_inicial, nodos_seleccionados_final);
+                    task = () -> buscador.busqueda_amplitud(nodo_inicial, nodos_seleccionados_final);
                     break;
                 case 5:
                     task = () -> buscador.busqueda_profundidad(nodo_inicial, nodos_seleccionados_final);
                     break;
                 case 6:
-                    // task = () -> buscador.busqueda_profundidad_iterativa(nodo_inicial, nodos_seleccionados_final);
+                    buscador.busqueda_profundidad_iterativa(nodo_inicial, nodos_seleccionados_final);
                     break;
                 case 7:
-                    // task = () -> buscador.busqueda_bidireccional(nodo_inicial, nodos_seleccionados_final.get(0));
+                    buscador.busqueda_bidireccional(nodo_inicial, nodos_seleccionados_final.get(0));
                     break;
                 case 8:
-                    // task = () -> buscador.busqueda_costo_uniforme(nodo_inicial, nodos_seleccionados_final.get(0));
+                    task = () -> buscador.busqueda_costo_uniforme(nodo_inicial, nodos_seleccionados_final);
                     break;
                 case 9:
-                    // task = () -> buscador.busqueda_del_gradiente(nodo_inicial, nodos_seleccionados_final.get(0));
+                    task = () -> buscador.busqueda_del_gradiente(nodo_inicial, nodos_seleccionados_final);
                     break;
                 case 10:
-                    // task = () -> buscador.busqueda_primero_el_mejor(nodo_inicial, nodos_seleccionados_final.get(0));
+                    task = () -> buscador.busqueda_primero_el_mejor(nodo_inicial, nodos_seleccionados_final);
                     break;
                 case 11:
-                    // task = () -> buscador.busqueda_A_estrella(nodo_inicial, nodos_seleccionados_final.get(0));
+                    task = () -> buscador.busqueda_A_estrella(nodo_inicial, nodos_seleccionados_final);
                     break;
                 case 12:
                     close_sc = true;

@@ -14,7 +14,9 @@ public class AnalizadorGrafos {
             System.out.println(nodo.get_nombre());
         }
         double tiempo = (endTime - startTime)/1_000_000.0;
+        System.out.println("TIEMPO DE EJECUCION: ");
         System.out.println(tiempo + " ms");
+        System.out.println("------------------");
     }
 
     public static double analizar_complejidad_temporal(){
