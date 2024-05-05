@@ -39,7 +39,7 @@ public class Main {
             
             opcion = Integer.parseInt(readOption());
             // Runnable task = () -> {};
-            Supplier<ArrayList<Nodo>> task = null;
+            Supplier<Resultado> task = null;
             switch (opcion) {
                 
                 case 1:
