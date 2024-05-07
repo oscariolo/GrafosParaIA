@@ -40,6 +40,12 @@ public class Main {
             opcion = Integer.parseInt(readOption());
             // Runnable task = () -> {};
             Supplier<Resultado> task = null;
+            final Integer max_hijos = AnalizadorGrafos.max_hijos(HashNodos);
+            final Integer max_deep = AnalizadorGrafos.max_deep(nodo_inicial);
+            final Integer max_aristas = AnalizadorGrafos.max_aristas(HashNodos,true);
+            System.out.println("deep: " + max_deep);
+            System.out.println("hijos: " + max_hijos);
+            
             switch (opcion) {
                 
                 case 1:
@@ -56,27 +62,45 @@ public class Main {
                 case 4:
                     
                     task = () -> buscador.busqueda_amplitud(nodo_inicial, nodos_seleccionados_final);
+                    AnalizadorGrafos.getComplexityResults_Not_Heurisitc("amplitud", max_hijos, max_deep);
                     break;
                 case 5:
                     task = () -> buscador.busqueda_profundidad(nodo_inicial, nodos_seleccionados_final);
+                    AnalizadorGrafos.getComplexityResults_Not_Heurisitc("profundidad", max_hijos, max_deep);
+
                     break;
                 case 6:
+                    double St_time = System.nanoTime();
                     buscador.busqueda_profundidad_iterativa(nodo_inicial, nodos_seleccionados_final);
+                    double Ed_time = System.nanoTime();
+                    double timed = (Ed_time - St_time)/1_000_000;
+                    AnalizadorGrafos.getComplexityResults_Not_Heurisitc("profundidad", max_hijos, max_deep);
+                    System.out.println(timed + " ms");
                     break;
                 case 7:
+                    double S_time = System.nanoTime();
                     buscador.busqueda_bidireccional(nodo_inicial, nodos_seleccionados_final.get(0));
+                    double E_time = System.nanoTime();
+                    AnalizadorGrafos.getComplexityResults_Not_Heurisitc("bidireccional", max_hijos,max_deep);
+                    double time = (E_time - S_time)/1_000_000;
+                    System.out.println(time + " ms");
                     break;
                 case 8:
-                    task = () -> buscador.busqueda_costo_uniforme(nodo_inicial, nodos_seleccionados_final);
+                    double C_E = buscador.busqueda_costo_uniforme(nodo_inicial, nodos_seleccionados_final).getValue1();
+                    task = () -> buscador.busqueda_costo_uniforme(nodo_inicial, nodos_seleccionados_final).getValue0();
+                    AnalizadorGrafos.getComplexityResults_Not_Heurisitc("costo_uniforme",max_hijos,C_E);
                     break;
                 case 9:
                     task = () -> buscador.busqueda_del_gradiente(nodo_inicial, nodos_seleccionados_final);
+                    AnalizadorGrafos.getComplexityResults_Heurisitc("gradiente",max_hijos, (double)HashNodos.size());
                     break;
                 case 10:
                     task = () -> buscador.busqueda_primero_el_mejor(nodo_inicial, nodos_seleccionados_final);
+                    AnalizadorGrafos.getComplexityResults_Heurisitc("primero_mejor", max_aristas,(double)HashNodos.size());
                     break;
                 case 11:
                     task = () -> buscador.busqueda_A_estrella(nodo_inicial, nodos_seleccionados_final);
+                    AnalizadorGrafos.getComplexityResults_Heurisitc("A_estrella", max_aristas,(double)HashNodos.size());
                     break;
                 case 12:
                     close_sc = true;

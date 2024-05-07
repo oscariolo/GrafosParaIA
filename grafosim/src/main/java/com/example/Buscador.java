@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.javatuples.Pair;
@@ -16,18 +17,24 @@ import org.javatuples.Pair;
 
 public class Buscador {
 
+    BiFunction<Integer,Integer,Double> complejidad;
+
     public Resultado busqueda_profundidad(Nodo inicio,ArrayList<Nodo> objetivos){ //pila
         Resultado resultado = new Resultado();
         Stack<Nodo> pilaNodos = new Stack<>();
         ArrayList<Nodo> lista_extraidos = new ArrayList<>();
         pilaNodos.push(inicio);
         resultado.copy_queue(pilaNodos);
+        
+
         while(!pilaNodos.isEmpty()){    
             Nodo extraido = pilaNodos.pop();
             resultado.copy_extraction(extraido);
             lista_extraidos.add(extraido);
             objetivos.remove(extraido);
             if(objetivos.isEmpty()){
+
+
                 return resultado;
             }
             for(Nodo nodo: extraido.get_hijos()){
@@ -99,23 +106,25 @@ public class Buscador {
     private CompletableFuture<ArrayList<Nodo>> busqueda_amplitud_future(Nodo inicio,ArrayList<Nodo> visitados_propio,ArrayList<Nodo> visitados_externo){
         
         CompletableFuture<ArrayList<Nodo>> future = CompletableFuture.supplyAsync(()->{
-            ArrayList<Nodo> colaNodos = new ArrayList<>();
+   
+            Deque<Nodo> colaNodos = new ArrayDeque<>();
+            ArrayList<Nodo> lista_extraidos = new ArrayList<>();
             colaNodos.add(inicio);
-            while(!colaNodos.isEmpty()){ 
-                Nodo extraido = colaNodos.remove(0);
+            while(!colaNodos.isEmpty()){
+                Nodo extraido = colaNodos.remove();
+                lista_extraidos.add(extraido);
                 visitados_propio.add(extraido);
-                for(Nodo nodo : extraido.get_hijos()){
-                    if(!visitados_propio.contains(nodo)){
+                for(Nodo nodo: extraido.get_hijos()){
+                    if(!lista_extraidos.contains(nodo) && !colaNodos.contains(nodo)){
                         colaNodos.add(nodo);
-                    }        
+                    }
                 }
                 ArrayList<Nodo> auxi = new ArrayList<>(visitados_propio);
                 auxi.retainAll(visitados_externo);
                 if(!auxi.isEmpty()){
-                    break;
-                }
-
-            }    
+                    return visitados_propio;
+                }   
+            }
             return visitados_propio;
         });
         return future;
@@ -281,11 +290,16 @@ public class Buscador {
 
     /////////////////////////////////////////////
     //BUSQUEDA POR COSTO UNIFORME////////////////
-    public Resultado busqueda_costo_uniforme(Nodo inicial, ArrayList<Nodo> objetivos){
+    public Pair<Resultado,Double> busqueda_costo_uniforme(Nodo inicial, ArrayList<Nodo> finales){
+        //variables para calculo de complejidad
+        Integer menor_costo_accion=100000;
+        double C_E = 0;
+        ///
         Resultado resultado = new Resultado();
         ArrayList<Pair<Nodo,Integer> >colaNodos_peso = new ArrayList<>();
         ArrayList<Nodo> visitados = new ArrayList<>();
         Pair<Nodo,Integer> par = Pair.with(inicial,0);
+        ArrayList<Nodo> objetivos = new ArrayList<>(finales);
         int iteraciones = 0;
         colaNodos_peso.add(par);
         resultado.historial_cola.add((ArrayList<Nodo>)colaNodos_peso.stream().map(Pair::getValue0).collect(Collectors.toList()));
@@ -334,10 +348,16 @@ public class Buscador {
             Collections.sort(colaNodos_peso, (o1, o2) -> Integer.compare(o1.getValue1(), o2.getValue1()));
             if(objetivos.remove(colaNodos_peso.get(0).getValue0())){
                 visitados.add(colaNodos_peso.get(0).getValue0());
-                if(objetivos.isEmpty()){return resultado;}
+                if(objetivos.isEmpty()){
+                    C_E = (double)colaNodos_peso.get(0).getValue1()/menor_costo_accion;
+                    return Pair.with(resultado,C_E);
+                }
             }
             //si no es entonces vemos los hijos
-            for(Arista arista : colaNodos_peso.get(0).getValue0().get_aristas()){     
+            for(Arista arista : colaNodos_peso.get(0).getValue0().get_aristas()){
+                if(arista.get_peso() < menor_costo_accion){
+                    menor_costo_accion = arista.get_peso();
+                } 
                 Pair<Nodo,Integer> par2 = Pair.with(arista.get_destino(),colaNodos_peso.get(0).getValue1() + arista.get_peso());
                 colaNodos_peso.add(par2);
             }
@@ -347,7 +367,7 @@ public class Buscador {
             resultado.historial_cola.add((ArrayList<Nodo>)colaNodos_peso.stream().map(Pair::getValue0).collect(Collectors.toList()));
         }
 
-        return resultado;
+        return Pair.with(resultado,C_E);
 
     }
 
@@ -436,6 +456,7 @@ public class Buscador {
         return resultado;
 
     }
+    
 
     
 }
